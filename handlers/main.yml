@@ -1,4 +1,6 @@
----
+- name: Validate config
+  shell:
+    cmd: "caddy validate --config {{ caddy_conf_dir }}/{{ caddy_conf_filename }}"
 
 - name: Restart caddy
   ansible.builtin.systemd:

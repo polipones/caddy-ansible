@@ -163,6 +163,7 @@
   when:
     - caddy_config_update or not caddy_config_stat.stat.exists
   notify:
+    - Validate config
     - Reload caddy
 
 - name: Template systemd service
