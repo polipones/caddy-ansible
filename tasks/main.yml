@@ -138,12 +138,28 @@
     path: "{{ caddy_conf_dir }}/{{ caddy_conf_filename }}"
   register: caddy_config_stat
 
-- name: Create caddy config
+- name: Ensure caddy config file exists
   ansible.builtin.copy:
-    content: "{{ caddy_config }}"
+    content: ""
     dest: "{{ caddy_conf_dir }}/{{ caddy_conf_filename }}"
+    force: false
     owner: "{{ caddy_user }}"
     mode: 0640
+  when:
+    - caddy_config_update or not caddy_config_stat.stat.exists
+
+- name: Copy caddy config to tmp location
+  ansible.builtin.copy:
+    content: "{{ caddy_config }}"
+    dest: "{{ caddy_conf_dir }}/{{ caddy_conf_filename }}.unformatted"
+    owner: "{{ caddy_user }}"
+    mode: 0640
+  when:
+    - caddy_config_update or not caddy_config_stat.stat.exists
+
+- name: Format and create caddy config
+  shell:
+    cmd: "cat {{ caddy_conf_dir }}/{{ caddy_conf_filename }}.unformatted | caddy fmt - > {{ caddy_conf_dir }}/{{ caddy_conf_filename }}"
   when:
     - caddy_config_update or not caddy_config_stat.stat.exists
   notify:
