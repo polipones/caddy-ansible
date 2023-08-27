@@ -85,7 +85,7 @@
     group: "{{ caddy_user_details.group }}"
   retries: 3
   delay: 2
-  when: "caddy_releases_cache.changed or caddy_features_cache.changed or caddy_version_cache.changed"
+  when: "caddy_update and (caddy_releases_cache.changed or caddy_features_cache.changed or caddy_version_cache.changed)"
   register: caddy_binary_cache
   tags: skip_ansible_lint
 
@@ -100,6 +100,7 @@
     group: "{{ caddy_user_details.group }}"
   retries: 3
   delay: 2
+  when: caddy_update
   register: caddy_download
   tags: skip_ansible_lint
 
